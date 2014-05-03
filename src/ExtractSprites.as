@@ -1,265 +1,101 @@
 package
 {
 	import com.adobe.images.PNGEncoder;
+	import com.adobe.protocols.dict.Dict;
 	
+	import flash.desktop.NativeApplication;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
+	import flash.display.Loader;
 	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.InvokeEvent;
 	import flash.filesystem.File;
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.net.URLRequest;
+	import flash.text.ReturnKeyLabel;
+	import flash.text.TextField;
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
+	import sprite.SpriteExporter;
+	import sprite.SpriteExtractor;
+	import sprite.SpriteHighlighter;
+	import utils.Logger;
+	import spriteSheet.SpriteSheet;
+	import spriteSheet.SpriteSheetEvent;
+	import spriteSheet.SpriteSheetProvider;
 	
 	[SWF(height="2048", width="2048")]
 	public class ExtractSprites extends Sprite
 	{
-		//[Embed(source="../assets/SpriteSheet.png")]
-		//[Embed(source="../assets/SpriteSheet1.png")]
-		//[Embed(source="../assets/SpriteSheet2.png")]
-		//[Embed(source="../assets/SpriteSheet3.png")]
-		[Embed(source="../assets/sprites_2.png")]
-		private var spriteSheet:Class;
-		private var spriteDict: Dictionary;
-		private var vSpacing: int;
-		private var hSpacing: int;
-		private var rectangles: Sprite;
+		private var bmp: Bitmap;		
 		
+		private var params: CLParams;
+		
+		private var spriteSheetProvider: SpriteSheetProvider;
+		private var spriteExtractor: SpriteExtractor;
+		private var spriteExporter: SpriteExporter;
+		private var spriteHighlighter: SpriteHighlighter;
+		
+		//1. command line;
+		//2. ui
+		//3. folders
+	
 		public function ExtractSprites()
 		{
-			spriteDict = new Dictionary();
-			var bmp: Bitmap = new spriteSheet();
-			var bmpData: BitmapData = bmp.bitmapData;
-			addChild(bmp);
-			addChild(rectangles = new Sprite());
-			extractSprites(bmpData);
-			exportSprites(bmpData);
+			//params = new CLParams();
+			spriteSheetProvider = new SpriteSheetProvider();
+			spriteExporter = new SpriteExporter();
+			spriteExtractor = new SpriteExtractor();
+			spriteHighlighter = new SpriteHighlighter();
+			Logger.init();
+			
+			spriteSheetProvider.addEventListener(SpriteSheetEvent.SPRITE_SHEET_AVAILABLE, onSpriteSheetAvailable);
+			
+			addChild(bmp = new Bitmap());
+			addChild(spriteHighlighter);
+			addChild(Logger.console);
+			
+		
+			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onAppInvoked);
 		}
 		
-		private function exportSprites(bmpData: BitmapData): void
+		protected function onSpriteSheetAvailable(event:SpriteSheetEvent):void
 		{
-			var exportingSprites: Vector.<SpriteExtracted> = new Vector.<SpriteExtracted>();
-			for each (var sprite: SpriteExtracted in spriteDict) {
-				exportingSprites.push(sprite);
-			}
+			startExtraction(event.spriteSheet)
 			
-			var configFile: String = "";
-			var fileName: String;
-			var spriteName: String = "SpriteSheet";
-			var appPath: String = File.applicationDirectory.nativePath;
-			var s: String = File.separator;
-			var filePrefix: String = appPath + s + ".." + s +"assets" + s + spriteName + s;
-			var ba:ByteArray;
-			var zeroPoint: Point = new Point();
-			var rect: Rectangle;
-			var pngSource:BitmapData;
-			var file: File;
-			var fileStream: FileStream;
-			var len: int = exportingSprites.length;
-			for (var i: int = 0; i < len; ++i) { 
-				rect = exportingSprites[i].rect;
-				pngSource = new BitmapData (rect.width, rect.height, true, 0x00000000);
-				pngSource.copyPixels(bmpData, rect, zeroPoint);
-				ba = PNGEncoder.encode(pngSource);
-				fileName = spriteName + "_" + i + ".png";
-				file = new File(filePrefix + fileName);
-				fileStream = new FileStream();
-				fileStream.open(file, FileMode.WRITE);
-				fileStream.writeBytes(ba);
-				fileStream.close();	
-				pngSource.dispose();
-				configFile += formatConfigEntry(fileName, i, rect);
-			}
-			ba = new ByteArray();
-			ba.writeUTFBytes(configFile);
-			fileName = spriteName + ".txt";
-			file = new File(filePrefix + fileName);
-			fileStream = new FileStream();
-			fileStream.open(file, FileMode.WRITE);
-			fileStream.writeBytes(ba);
-			fileStream.close();	
 		}
 		
-		private function formatConfigEntry(fileName:String, index: int, rect:Rectangle):String {
-			return index + " " + fileName + " " + rect.left + " " + rect.top + " " + rect.width + " " + rect.height + "\n";
+		private function startExtraction(spriteSheet: SpriteSheet): void {
+			bmp.bitmapData && bmp.bitmapData.dispose();
+			bmp.bitmapData = spriteSheet.bmpData;			
+			spriteExtractor.extractSprites(spriteSheet);
+			spriteHighlighter.highlightSprites(spriteSheet.sprites);
+			spriteExporter.exportSprites(spriteSheet);
 		}
 		
-		private function extractSprites(bmpData:BitmapData):void
+		protected function onAppInvoked(event:InvokeEvent):void
 		{
-			var now: Number = getTimer();
-			var ssWidth: int = bmpData.width;
-			var ssHeight: int = bmpData.height;
-			var pixels: Vector.<Vector.<Pixel>> = new Vector.<Vector.<Pixel>>(ssHeight, true);
-			var yMinus1: int;
-			var xMinus1: int;
-			var noSprite: int = -1;
-			var spriteId: int;
-			var spriteRect: Rectangle;
-			var sprite: SpriteExtracted;
-			var pixel: Pixel;
-			var neighbourSpriteId: int;
-			var neighbourSpriteRect: Rectangle;
-			var neighbourSprite: SpriteExtracted;
-			var neighbourPixel: Pixel;
-			for (var y: int = 0; y < ssHeight; ++y){
-				pixels[y] = new Vector.<Pixel>(ssWidth, true);
-				for (var x: int = 0; x < ssWidth; ++x) {
-					if(bmpData.getPixel32(x, y) != 0){
-						spriteId = noSprite;
-						if(x > 0) {
-							xMinus1 = x - 1;
-							neighbourPixel = pixels[y][xMinus1];
-							neighbourPixel && (spriteId = neighbourPixel.sprite_id);
-						}
-						if(y > 0) {
-							yMinus1 = y - 1;
-							if (x > 0){
-								neighbourPixel = pixels[yMinus1][xMinus1];
-								if (neighbourPixel) {
-									neighbourSpriteId = neighbourPixel.sprite_id;
-									if (spriteId != noSprite && spriteId != neighbourSpriteId){
-										spriteDict[neighbourSpriteId].merge(spriteDict[spriteId]);
-										delete spriteDict[spriteId];
-									}
-									spriteId = neighbourSpriteId;
-								}
-							}
-							
-							neighbourPixel = pixels[yMinus1][x];
-							if (neighbourPixel) {
-								neighbourSpriteId = neighbourPixel.sprite_id;
-								if (spriteId != noSprite && spriteId != neighbourSpriteId){
-									spriteDict[neighbourSpriteId].merge(spriteDict[spriteId]);
-									delete spriteDict[spriteId];
-								}
-								spriteId = neighbourSpriteId;
-							}
-							
-							if (x < ssWidth - 1){
-								neighbourPixel = pixels[yMinus1][x + 1]
-								if (neighbourPixel) {
-									neighbourSpriteId = neighbourPixel.sprite_id;
-									if (spriteId != noSprite && spriteId != neighbourSpriteId){
-										spriteDict[neighbourSpriteId].merge(spriteDict[spriteId]);
-										delete spriteDict[spriteId];
-									}
-									spriteId = neighbourSpriteId;
-								}
-							}							
-						}
-						
-						if( spriteId == noSprite) {
-							sprite = new SpriteExtracted();
-							spriteId = sprite.id;
-							spriteDict[spriteId] = sprite;
-							spriteRect = sprite.rect;
-							spriteRect.left = x - hSpacing;
-							spriteRect.right = x + hSpacing + 1;
-							spriteRect.top = y - vSpacing;
-							spriteRect.bottom = y + vSpacing + 1;
-						} else {
-							sprite = spriteDict[spriteId];
-							spriteRect = sprite.rect;
-							spriteRect.left = Math.min(spriteRect.left, x - hSpacing);
-							spriteRect.right = Math.max(spriteRect.right, x + hSpacing + 1);
-							spriteRect.top = Math.min(spriteRect.top, y - vSpacing);
-							spriteRect.bottom = Math.max(spriteRect.bottom, y + vSpacing + 1);
-						}
-						pixel = new Pixel(spriteId);
-						pixels[y][x] = pixel;
-						sprite.pixels.push(pixel);
-					
-					}
-					
+			//spriteSheetProvider.loadDefault();
+			spriteSheetProvider.loadSpriteFolder();
+			/*var arguments: Array = event.arguments;
+			arguments[0] = "spriteSheet=E:/Development/ExtractSprites/assets/sprites_2.png";
+			var len: int = arguments.length;
+			if (len > 0){
+				for (var i: int = 0; i < len; ++i){
+					var paramPair: Array = String(arguments[i]).split("=");
+					params.setParam(paramPair[0], paramPair[1]);
 				}
-			}
-			
-			trace("Image analyzing time: " + (getTimer() - now) + " ms.");
-			var mergingSprites: Vector.<SpriteExtracted> = new Vector.<SpriteExtracted>();
-			for each (sprite in spriteDict) {
-				mergingSprites.push(sprite);
-			}
-			trace("Num of sprites "+ mergingSprites.length)
-			now = getTimer();
-			var spriteI: SpriteExtracted;
-			var spriteIid: int;
-			var spriteJ: SpriteExtracted;
-			var spriteJid: int;
-			for (var i: int = mergingSprites.length - 1; i > -1; --i) {
-				spriteI = mergingSprites[i];
-				spriteIid = spriteI.id;
-				for (var j: int = mergingSprites.length - 1; j > -1; --j) {
-					spriteJ = mergingSprites[j];
-					spriteJid = spriteJ.id;
-					if (spriteIid != spriteJid && spriteI.rect.intersects(spriteJ.rect)) {
-						delete spriteDict[spriteIid];	
-						spriteJ.merge(spriteI,false);
-						spriteDict[spriteJ.id] = spriteJ;
-					}
-				}
-			}
-			
-			trace("Merging overlapping sprites time: " + (getTimer() - now) + " ms.");
-			
-			var graphics: Graphics = rectangles.graphics;
-			graphics.clear();
-			graphics.lineStyle(1);
-			for each (sprite in spriteDict) {
-				spriteRect = sprite.rect;
-				graphics.moveTo(spriteRect.left, spriteRect.top);
-				graphics.lineTo(spriteRect.right - 1, spriteRect.top);
-				graphics.lineTo(spriteRect.right - 1, spriteRect.bottom - 1);
-				graphics.lineTo(spriteRect.left, spriteRect.bottom - 1);
-				graphics.lineTo(spriteRect.left, spriteRect.top);
-			}
-			graphics.endFill();
-		}
-	}
-}
-import flash.geom.Rectangle;
-
-class SpriteExtracted {
-	private static var ID_COUNTER: int;
-	public var id: int;
-	public var rect: Rectangle;
-	public var pixels: Vector.<Pixel>;
-	
-	public function SpriteExtracted() {
-		id = ID_COUNTER ++;
-		rect = new Rectangle();
-		pixels = new Vector.<Pixel>();
-	}
-	
-	public function merge(mergingSprite: SpriteExtracted, mergePixels: Boolean = true): void {
-		var mergingRect: Rectangle = mergingSprite.rect;
-		rect.left = Math.min(rect.left, mergingRect.left);
-		rect.right = Math.max(rect.right, mergingRect.right);
-		rect.top = Math.min(rect.top, mergingRect.top);
-		rect.bottom = Math.max(rect.bottom, mergingRect.bottom);
-		if (mergePixels) {
-			var mergingPixels: Vector.<Pixel> = mergingSprite.pixels;
-			var len: int = mergingPixels.length;
-			var pixel: Pixel;
-			for (var i: int = 0; i < len; ++i) {
-				pixel = mergingPixels[i];
-				pixel.sprite_id = id;
-				pixels.push(pixel);
-			}
-		}
-		mergingSprite.rect = rect;
-		mergingSprite.id = id;
-		mergingSprite.pixels = pixels;
-	}
-}
-
-class Pixel {
-	public var sprite_id: int;
-	
-	public function Pixel(sprite_id: int) {
-		this.sprite_id = sprite_id;
+				extract(params.getParam(CLParams.SPRITE_SHEET));
+			} else { 
+				extract(CLParams.DEFAULT);
+			}*/
+		}		
 	}
 }
