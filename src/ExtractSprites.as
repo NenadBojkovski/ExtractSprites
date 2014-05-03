@@ -47,27 +47,45 @@ package
 				exportingSprites.push(sprite);
 			}
 			
+			var configFile: String = "";
+			var fileName: String;
 			var spriteName: String = "SpriteSheet";
 			var appPath: String = File.applicationDirectory.nativePath;
 			var s: String = File.separator;
-			var filePrefix: String = appPath + s + ".." + s +"assets" + s + spriteName + s + spriteName + "_ ";
+			var filePrefix: String = appPath + s + ".." + s +"assets" + s + spriteName + s;
 			var ba:ByteArray;
 			var zeroPoint: Point = new Point();
 			var rect: Rectangle;
 			var pngSource:BitmapData;
+			var file: File;
+			var fileStream: FileStream;
 			var len: int = exportingSprites.length;
 			for (var i: int = 0; i < len; ++i) { 
 				rect = exportingSprites[i].rect;
 				pngSource = new BitmapData (rect.width, rect.height, true, 0x00000000);
 				pngSource.copyPixels(bmpData, rect, zeroPoint);
 				ba = PNGEncoder.encode(pngSource);
-				var file:File = new File(filePrefix + i + ".png");
-				var fileStream:FileStream = new FileStream();
+				fileName = spriteName + "_" + i + ".png";
+				file = new File(filePrefix + fileName);
+				fileStream = new FileStream();
 				fileStream.open(file, FileMode.WRITE);
 				fileStream.writeBytes(ba);
 				fileStream.close();	
 				pngSource.dispose();
+				configFile += formatConfigEntry(fileName, i, rect);
 			}
+			ba = new ByteArray();
+			ba.writeUTFBytes(configFile);
+			fileName = spriteName + ".txt";
+			file = new File(filePrefix + fileName);
+			fileStream = new FileStream();
+			fileStream.open(file, FileMode.WRITE);
+			fileStream.writeBytes(ba);
+			fileStream.close();	
+		}
+		
+		private function formatConfigEntry(fileName:String, index: int, rect:Rectangle):String {
+			return index + " " + fileName + " " + rect.left + " " + rect.top + " " + rect.width + " " + rect.height + "\n";
 		}
 		
 		private function extractSprites(bmpData:BitmapData):void
