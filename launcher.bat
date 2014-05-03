@@ -1,0 +1,1 @@
+E:\Development\ExtractSprites\bin-release\ExtractSprites\ExtractSprites.exe "spriteSheet=E:/Development/ExtractSprites/assets/sprites_2.png"
