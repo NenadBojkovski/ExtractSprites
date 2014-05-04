@@ -4,8 +4,10 @@ package sprite_pckg
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
-	import utils.Logger;
+	
 	import spritesheet_pckg.SpriteSheet;
+	
+	import utils.Logger;
 
 	public class SpriteExtractor
 	{
@@ -139,6 +141,11 @@ package sprite_pckg
 			for each (sprite in spriteDict) {
 				finalSprites.push(sprite);
 			}
+			finalSprites.sort(function (sprite1:SpriteExtracted, sprite2:SpriteExtracted): int {
+									var val1: int = (sprite1.rect.y - 1) * ssWidth + sprite1.rect.x;
+									var val2: int = (sprite2.rect.y - 1) * ssWidth + sprite2.rect.x;
+									return val1 < val2 ? -1 : 1;
+								})
 			Logger.log("Num of sprites "+ finalSprites.length)
 			spriteSheet.sprites = finalSprites;
 			return finalSprites;		
