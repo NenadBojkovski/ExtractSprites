@@ -14,7 +14,7 @@ package spritesheet_pckg
 		//[Embed(source="../assets/SpriteSheet4.png")]
 		//[Embed(source="../assets/SpriteSheet1.png")]
 		//[Embed(source="../assets/SpriteSheet2.png")]
-		[Embed(source="../assets/SpriteSheet3.png")]
+		//[Embed(source="../assets/SpriteSheet3.png")]
 		//[Embed(source="../assets/sprites_2.png")]
 		private var SpriteSheetClass:Class;
 		private var defaultName: String = "SpriteSheet3";
@@ -63,7 +63,11 @@ package spritesheet_pckg
 			Logger.log("Loading failed!");
 			loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadCompleted);
 			loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onLoadFailed);
-			//throw new Error("Loading image failed!");			
+			//throw new Error("Loading image failed!");
+			if (spriteSheetFiles.length > 0){
+				var nextFile: File = spriteSheetFiles.shift();
+				load(nextFile.url);
+			}
 		}
 		
 		protected function onLoadCompleted(event:Event):void
@@ -81,7 +85,7 @@ package spritesheet_pckg
 			
 			if (spriteSheetFiles.length > 0){
 				var nextFile: File = spriteSheetFiles.shift();
-				load(nextFile.nativePath);
+				load(nextFile.url);
 			}
 		}
 	}

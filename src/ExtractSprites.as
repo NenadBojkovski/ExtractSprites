@@ -23,14 +23,20 @@ package
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
-	import sprite.SpriteExporter;
-	import sprite.SpriteExtractor;
-	import sprite.SpriteHighlighter;
+
+	import sprite_pckg.SpriteExporter;
+
+	import sprite_pckg.SpriteExtractor;
+	import sprite_pckg.SpriteHighlighter;
+
+	import spritesheet_pckg.SpriteSheet;
+
+	import spritesheet_pckg.SpriteSheetEvent;
+
+	import spritesheet_pckg.SpriteSheetProvider;
+
 	import utils.Logger;
-	import spriteSheet.SpriteSheet;
-	import spriteSheet.SpriteSheetEvent;
-	import spriteSheet.SpriteSheetProvider;
-	
+
 	[SWF(height="2048", width="2048")]
 	public class ExtractSprites extends Sprite
 	{

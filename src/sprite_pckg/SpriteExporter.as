@@ -23,9 +23,9 @@ package sprite_pckg
 			var bmpData: BitmapData = spriteSheet.bmpData;
 			var configFile: String = "";
 			var fileName: String;
-			var spriteName: String = spriteSheet.name;
-			var destionationPath: String = path == null ? File.desktopDirectory.nativePath : path;
 			var s: String = File.separator;
+			var spriteName: String = spriteSheet.name;
+			var destionationPath: String = path == null ? (File.desktopDirectory.nativePath + s + "sprites") : path;
 			var filePrefix: String = destionationPath + s + spriteName + s;
 			var ba:ByteArray;
 			var zeroPoint: Point = new Point();
