@@ -11,22 +11,27 @@ package sprite_pckg
 	import flash.utils.ByteArray;
 	import spritesheet_pckg.SpriteSheet;
 
+	import utils.Logger;
+
 	public class SpriteExporter
 	{
 		public function SpriteExporter()
 		{
 		}
 		
-		public function exportSprites(spriteSheet: SpriteSheet, path: String = null, configFileType: String = "txt"): void
+		public function exportSprites(spriteSheet: SpriteSheet): void
 		{
+			var params: CLParams = CLParams.getInstance();
 			var exportingSprites: Vector.<SpriteExtracted> = spriteSheet.sprites;
 			var bmpData: BitmapData = spriteSheet.bmpData;
 			var configFile: String = "";
 			var fileName: String;
-			var s: String = File.separator;
 			var spriteName: String = spriteSheet.name;
-			var destionationPath: String = path == null ? (File.desktopDirectory.nativePath + s + "sprites") : path;
-			var filePrefix: String = destionationPath + s + spriteName + s;
+			var s: String = File.separator;
+			var destinationPath: String = params.getParam(CLParams.DEST_FOLDER);
+			var startSeparator: String = destinationPath.charAt(destinationPath.length - 1) == s ? "" : s;
+			var filePrefix: String = startSeparator + destinationPath + s + spriteName + s;
+			Logger.log("Destination folder: "+filePrefix);
 			var ba:ByteArray;
 			var zeroPoint: Point = new Point();
 			var rect: Rectangle;

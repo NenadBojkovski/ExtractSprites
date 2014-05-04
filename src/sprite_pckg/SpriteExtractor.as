@@ -105,7 +105,7 @@ package sprite_pckg
 				}
 			}
 			
-			Logger.log("Image analyzing time: " + (getTimer() - now) + " ms.");
+			Logger.log("Image analysing time: " + (getTimer() - now) + " ms.");
 			if (mergeOverlappingSprites){
 				now = getTimer();
 				var spriteI: SpriteExtracted;

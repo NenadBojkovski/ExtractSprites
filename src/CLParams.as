@@ -3,30 +3,77 @@ package
 	import flash.filesystem.File;
 	import flash.utils.Dictionary;
 
+	import utils.Logger;
+
 	public class CLParams
 	{
 		
-		public static const DEFAULT: String = "default";
-		public static const SPRITE_SHEET: String = "spriteSheet";
+		public static const FILE: String = "file";
+		public static const FOLDER: String = "folder";
 		public static const DEST_FOLDER: String = "destFolder";
 		public static const CONFIG_FILE_FORMAT: String = "configFileFormat";
+
+		private var availableArguments: Array = [FILE, DEST_FOLDER, CONFIG_FILE_FORMAT, FOLDER];
 		private var params: Dictionary = new Dictionary();
+		//if the commandline params are provided.
+		private var _clMode: Boolean = false;
+
+		private static var _instance: CLParams;
+		private static var _canBeInstantiated: Boolean;
+
 		public function CLParams()
 		{
-			params[SPRITE_SHEET] = DEFAULT;
-			params[DEST_FOLDER] = "";// File.applicationDirectory;
+			if (!_canBeInstantiated) {
+				throw new Error("CLParams is singleton!");
+			}
+			params[DEST_FOLDER] = File.documentsDirectory.nativePath + File.separator + "sprites";
 			params[CONFIG_FILE_FORMAT] = "txt";
 		}
-		
-		public function setParam(paramID: String, paramValue: String): void {
-			if (!params[paramID]) {
-				throw new Error("Invalid Parameter");
+
+		public static function getInstance(): CLParams {
+			if (!_instance) {
+				_canBeInstantiated = true;
+				_instance = new CLParams();
+				_canBeInstantiated = false;
 			}
-			params[paramID] = paramValue;
+			return _instance;
 		}
 		
 		public function getParam(paramID: String): String {
 			return params[paramID];
+		}
+
+		public function apply(arguments: Array): void {
+			var len: int = arguments.length;
+			_clMode = len > 0;
+			Logger.log("Command line mode: "+_clMode);
+			var errorText: String;
+			var argument: Array;
+			var argumentID: String;
+			var argumentValue: String;
+			for (var i: int = 0; i < len; ++i) {
+				argument = arguments[i].split("=");
+				argumentID = argument[0];
+				argumentValue = argument[1];
+				if (availableArguments.indexOf(argumentID) > -1){
+					params[argumentID] = argumentValue;
+					Logger.log("Arguments "+argumentID +" = "+argumentValue);
+				} else {
+					errorText = argumentID + " does not exist!";
+					Logger.error(errorText);
+					throw  new Error(errorText);
+				}
+
+			}
+			if (_clMode && !params[FOLDER] && !params[FILE]) {
+				errorText = "There is no file or folder chosen!";
+				Logger.error(errorText);
+				throw  new Error(errorText);
+			}
+		}
+
+		public function get clMode(): Boolean {
+			return _clMode;
 		}
 	}
 }

@@ -4,8 +4,10 @@ package spritesheet_pckg
 	
 	public class SpriteSheetEvent extends Event
 	{
-		public static const SPRITE_SHEET_AVAILABLE: String = "SPRITE_SHEET_AVAILABLE";
-		
+		public static const SPRITE_SHEET_LOADED: String = "SPRITE_SHEET_AVAILABLE";
+		public static const LAST_SPRITE_SHEET_LOADED: String = "LAST_SPRITE_SHEET_LOADED";
+		public static const LAST_SPRITE_SHEET_FAILED: String = "LAST_SPRITE_SHEET_FAILED";
+
 		private var _spriteSheet: SpriteSheet;
 		public function SpriteSheetEvent(type:String, spriteSheet: SpriteSheet, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
