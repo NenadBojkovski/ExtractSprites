@@ -4,6 +4,7 @@ package spritesheet_pckg
 	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.FileListEvent;
 	import flash.events.IOErrorEvent;
 	import flash.filesystem.File;
 	import flash.filesystem.File;
@@ -34,10 +35,14 @@ package spritesheet_pckg
 			}
 		}
 
-		private function onFileSelected(event: Event): void {
-			var files: Vector.<File> = new Vector.<File>();
-			files.push(File(event.target));
-			loadFiles(files);
+		public function loadMultiple(): void {
+			browseFiles = new File();
+			browseFiles.addEventListener(FileListEvent.SELECT_MULTIPLE, onMultipleSelected);
+			browseFiles.browseForOpenMultiple("Choose a files");
+		}
+
+		private function onMultipleSelected(event: FileListEvent): void {
+			loadFiles(Vector.<File>(event.files));
 		}
 
 		public function loadFolder(): void {
@@ -50,6 +55,13 @@ package spritesheet_pckg
 				 browseFiles.addEventListener(Event.SELECT, onFolderSelected);
 				 browseFiles.browseForDirectory("Choose a directory");
 			}
+		}
+
+
+		private function onFileSelected(event: Event): void {
+			var files: Vector.<File> = new Vector.<File>();
+			files.push(File(event.target));
+			loadFiles(files);
 		}
 
 		private function filterPngs(files: Vector.<File>): Vector.<File> {
@@ -89,8 +101,6 @@ package spritesheet_pckg
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadCompleted, false, 0 ,true);
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoadFailed, false, 0 ,true);
 			loader.load(new URLRequest(spriteSheet));
-					
-			
 		}
 		
 		protected function onLoadFailed(event: IOErrorEvent):void

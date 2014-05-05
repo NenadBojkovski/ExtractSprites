@@ -23,9 +23,14 @@ package
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
+
+	import sprite_pckg.AnimationCompressor;
 	import sprite_pckg.SpriteExporter;
 	import sprite_pckg.SpriteExtractor;
 	import sprite_pckg.SpriteHighlighter;
+
+	import spritesheet_pckg.SpriteSheet;
+
 	import utils.Logger;
 	import spritesheet_pckg.SpriteSheet;
 	import spritesheet_pckg.SpriteSheetEvent;
@@ -40,9 +45,11 @@ package
 		private var spriteExtractor: SpriteExtractor;
 		private var spriteExporter: SpriteExporter;
 		private var spriteHighlighter: SpriteHighlighter;
+		private var animationCompressor: AnimationCompressor;
 		private var lastSpriteSheetLoaded: Boolean;
 		private var now: Number;
 		private var numImagesProcessed: int;
+		private var isCompression: Boolean = false;
 		//1. command line;
 		//2. ui
 		//3. folders
@@ -54,6 +61,7 @@ package
 			spriteExporter = new SpriteExporter();
 			spriteExtractor = new SpriteExtractor();
 			spriteHighlighter = new SpriteHighlighter();
+			animationCompressor = new AnimationCompressor();
 			Logger.init();
 			
 			spriteSheetProvider.addEventListener(SpriteSheetEvent.SPRITE_SHEET_LOADED, onSpriteSheetLoaded);
@@ -65,8 +73,8 @@ package
 			addChild(bmp);
 			addChild(spriteHighlighter);
 			addChild(Logger.console);
-			
-		
+
+
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onAppInvoked);
 		}
 
@@ -76,12 +84,23 @@ package
 
 		private function onLastSpriteSheetLoaded(event: SpriteSheetEvent): void {
 			lastSpriteSheetLoaded = true;
+			if (isCompression) {
+				var compressedSprites: Vector.<SpriteSheet> = animationCompressor.compress();
+				var len: int = compressedSprites.length;
+				for (var i: int = 0; i < len; ++i) {
+					spriteExporter.exportSprites(compressedSprites[i]);
+				}
+
+			}
 		}
 
 		private function onSpriteSheetLoaded(event:SpriteSheetEvent):void
 		{
-			startExtraction(event.spriteSheet)
-			
+			if (isCompression) {
+				animationCompressor.addSprite(event.spriteSheet);
+			} else {
+				startExtraction(event.spriteSheet);
+			}
 		}
 		
 		private function startExtraction(spriteSheet: SpriteSheet): void {
@@ -142,8 +161,9 @@ package
 				spriteSheetProvider.loadFile();
 			} else if (!params.clMode) {
 				now = getTimer();
-				//spriteSheetProvider.loadFolder();
-				spriteSheetProvider.loadFile();
+				spriteSheetProvider.loadFolder();
+				//spriteSheetProvider.loadFile();
+				//spriteSheetProvider.loadMultiple();
 			}
 		}		
 	}
