@@ -51,7 +51,7 @@ package sprite_pckg
 				fileStream.writeBytes(ba);
 				fileStream.close();	
 				pngSource.dispose();
-				configFile += formatConfigEntry(fileName, i, rect);
+				configFile += formatConfigEntry(fileName, i, rect, i == len - 1);
 			}
 			ba = new ByteArray();
 			ba.writeUTFBytes(configFile);
@@ -63,8 +63,10 @@ package sprite_pckg
 			fileStream.close();	
 		}
 		
-		private function formatConfigEntry(fileName:String, index: int, rect:Rectangle):String {
-			return index + " " + fileName + " " + rect.left + " " + rect.top + " " + rect.width + " " + rect.height + "\n";
+		private function formatConfigEntry(fileName:String, index: int, rect:Rectangle, finalEntry: Boolean):String {
+			var entryText: String = index + " " + fileName + " " + rect.left + " " + rect.top + " " + rect.width + " " + rect.height;
+			entryText += finalEntry ? "" : "\n";
+			return entryText;
 		}		
 	}
 }
