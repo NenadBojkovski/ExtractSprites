@@ -25,7 +25,7 @@ package spritesheet_pckg
 			var params: CLParams = CLParams.getInstance();
 			if (params.clMode) {
 				var files: Vector.<File> = new Vector.<File>();
-				files.push(new File(params.getParam(CLParams.FILE)));
+				files.push(new File(params.getParam(CLParams.SRC_FILE)));
 				loadFiles(files);
 			} else {
 				browseFiles = new File();
@@ -39,11 +39,11 @@ package spritesheet_pckg
 			files.push(File(event.target));
 			loadFiles(files);
 		}
-		
+
 		public function loadFolder(): void {
 			var params: CLParams = CLParams.getInstance();
 			if (params.clMode) {
-				var folder: File = new File(params.getParam(CLParams.FOLDER));
+				var folder: File = new File(params.getParam(CLParams.SRC_FOLDER));
 				loadFiles(Vector.<File>(folder.getDirectoryListing()));
 			} else {
 				 browseFiles = new File();
