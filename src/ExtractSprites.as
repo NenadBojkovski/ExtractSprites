@@ -134,10 +134,10 @@ package
 		{
 			var params: CLParams = CLParams.getInstance();
 			params.apply(event.arguments);
-			if (params.getParam(CLParams.FOLDER)) {
+			if (params.getParam(CLParams.SRC_FOLDER)) {
 				now = getTimer();
 				spriteSheetProvider.loadFolder();
-			} else if (params.getParam(CLParams.FILE)) {
+			} else if (params.getParam(CLParams.SRC_FILE)) {
 				now = getTimer();
 				spriteSheetProvider.loadFile();
 			} else if (!params.clMode) {
