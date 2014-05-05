@@ -8,12 +8,12 @@
           <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
         </Transforms>
         <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-        <DigestValue>A0GTQM3OVFVsWV94by3hub9koW5RDbjCZNYcgszbEMo=</DigestValue>
+        <DigestValue>z2Uhs/0IcxQQtG4nGuk7j/pz42y2OdQaOK2YM48TL8M=</DigestValue>
       </Reference>
     </SignedInfo>
-    <SignatureValue Id="PackageSignatureValue">U7ZewB60ewsq0yNVp/uuXdY9lTMy1eltGTu8SD8G9Hzp3xmPDPFua1f28bJNi3WG/S5JnmUWTag7
-8+HIya4ktgso6ZOcq5+y/wwfT9pDKCszyEo0ubePCpVULSftFfcI0hMLJEzYyFt++VmVf8DAL4dB
-s2FMda9ullwLveJ0tuU=</SignatureValue>
+    <SignatureValue Id="PackageSignatureValue">Dcgft9EHB8qwLyWScOTp02v5YH5OTQARsmOoke/WmGRiMlqcxQYGShmF0aFUjzDLN0LCu4arMrMA
+yBwiZaRkh15gTgf5bX/lDkqdlmpFwqdCh+Rhgq/Y9Q7Epub/l4XJWtUuhCtLtSRSGAQHKGQDDh5z
+4oNlqr3xvCGGd050d2U=</SignatureValue>
     <KeyInfo>
       <X509Data>
         <X509Certificate>MIIB3DCCAUSgAwIBAgIbLTdlMTc5NDRkOjEzODA1NGMzMjJhOi04MDAwMA0GCSqGSIb3DQEBBQUA
@@ -29,7 +29,7 @@ b6lPQ9iGtRqwgNuL27QQ0ud6bJW2h59b</X509Certificate>
     </KeyInfo>
     <Object>
       <Manifest Id="PackageContents">
-        <Reference URI="mimetype"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>0/oCb84THKMagtI0Dy0KogEu92TegdesqRr/clXct1c=</DigestValue></Reference><Reference URI="META-INF/AIR/application.xml"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>kMrfccwnCKCSrTjmxoDFVUqUNIj11dBlXg44wem72iE=</DigestValue></Reference><Reference URI="ExtractSprites.swf"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>PCyRc7KkQMISGrteihaf2JpDbZ1a2YBmlyQBEEwt4YA=</DigestValue></Reference>
+        <Reference URI="mimetype"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>0/oCb84THKMagtI0Dy0KogEu92TegdesqRr/clXct1c=</DigestValue></Reference><Reference URI="META-INF/AIR/application.xml"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>kMrfccwnCKCSrTjmxoDFVUqUNIj11dBlXg44wem72iE=</DigestValue></Reference><Reference URI="ExtractSprites.swf"><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod><DigestValue>JaYFfOkPtKQFCwFgztCraSTbRaY03d9g7rw3g/vh6R0=</DigestValue></Reference>
       </Manifest>
     </Object>
     
