@@ -161,8 +161,8 @@ package
 				spriteSheetProvider.loadFile();
 			} else if (!params.clMode) {
 				now = getTimer();
-				//spriteSheetProvider.loadFolder();
-				spriteSheetProvider.loadFile();
+				spriteSheetProvider.loadFolder();
+				//spriteSheetProvider.loadFile();
 				//spriteSheetProvider.loadMultiple();
 			}
 		}		
