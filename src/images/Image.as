@@ -1,9 +1,9 @@
-package spritesheet_pckg
+package images
 {
 	import flash.display.BitmapData;
-	import sprite_pckg.SpriteExtracted;
+	import spritetools.SpriteExtracted;
 
-	public class SpriteSheet {
+	public class Image {
 		public var bmpData: BitmapData;
 		public var name: String;
 		public var sprites: Vector.<SpriteExtracted>;

@@ -1,40 +1,40 @@
-package sprite_pckg {
+package spritetools {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 
-	import spritesheet_pckg.SpriteSheet;
+	import images.Image;
 
-	public class AnimationCompressor {
-		private var spritesToCompress: Vector.<SpriteSheet>;
-		public function AnimationCompressor() {
-			spritesToCompress = new Vector.<SpriteSheet>();
+	public class AnimationDeltaConverter {
+		private var spritesToConvert: Vector.<Image>;
+		public function AnimationDeltaConverter() {
+			spritesToConvert = new Vector.<Image>();
 		}
 
-		public function addSprite(spriteSheet: SpriteSheet): void {
-			spritesToCompress.push(spriteSheet);
+		public function addSprite(image: Image): void {
+			spritesToConvert.push(image);
 		}
 
-		public function compress(): Vector.<SpriteSheet> {
-			var compressedSprites: Vector.<SpriteSheet> = new Vector.<SpriteSheet>();
-			var len: int = spritesToCompress.length;
-			var sprite: SpriteSheet;
+		public function convert(): Vector.<Image> {
+			var compressedSprites: Vector.<Image> = new Vector.<Image>();
+			var len: int = spritesToConvert.length;
+			var sprite: Image;
 			for (var i: int = 1; i < len; ++i) {
-				sprite = findDelta(spritesToCompress[i-1], spritesToCompress[i]);
+				sprite = findDelta(spritesToConvert[i-1], spritesToConvert[i]);
 				compressedSprites.push(sprite);
 			}
 			return compressedSprites;
 		}
 
-		private function findDelta(spriteSheet1: SpriteSheet, spriteSheet2: SpriteSheet): SpriteSheet {
+		private function findDelta(image1: Image, image2: Image): Image {
 			var sprite: SpriteExtracted;
-			var bmpData1: BitmapData = spriteSheet1.bmpData;
-			var bmpData2: BitmapData = spriteSheet2.bmpData;
+			var bmpData1: BitmapData = image1.bmpData;
+			var bmpData2: BitmapData = image2.bmpData;
 			if (!bmpData1 || !bmpData2 || bmpData1.width != bmpData2.width || bmpData1.height != bmpData2.height) {
 				sprite = new SpriteExtracted();
 				sprite.rect = bmpData2.rect;
-				spriteSheet2.sprites = new Vector.<SpriteExtracted>();
-				spriteSheet2.sprites.push(sprite);
-				return spriteSheet2;
+				image2.sprites = new Vector.<SpriteExtracted>();
+				image2.sprites.push(sprite);
+				return image2;
 			}
 
 			var width: int = bmpData2.width;
@@ -49,13 +49,13 @@ package sprite_pckg {
 					}
 				}
 			}
-			var compressedSprite: SpriteSheet = new SpriteSheet();
+			var compressedSprite: Image = new Image();
 			compressedSprite.bmpData = bmpDataCompressed;
 			sprite = new SpriteExtracted();
 			sprite.rect = bmpDataCompressed.rect;
 			compressedSprite.sprites = new Vector.<SpriteExtracted>();
 			compressedSprite.sprites.push(sprite);
-			compressedSprite.name = spriteSheet2.name;
+			compressedSprite.name = image2.name;
 
 			return compressedSprite;
 		}

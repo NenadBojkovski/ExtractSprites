@@ -1,4 +1,4 @@
-package sprite_pckg
+package spritetools
 {
 	public class Pixel {
 		public var sprite_id: int;

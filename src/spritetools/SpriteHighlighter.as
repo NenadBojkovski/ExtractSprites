@@ -1,4 +1,4 @@
-package sprite_pckg
+package spritetools
 {
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;

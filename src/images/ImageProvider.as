@@ -1,4 +1,4 @@
-package spritesheet_pckg
+package images
 {
 	import flash.display.Bitmap;
 	import flash.display.Loader;
@@ -11,14 +11,14 @@ package spritesheet_pckg
 	import flash.net.URLRequest;
 	import utils.Logger;
 
-	public class SpriteSheetProvider extends EventDispatcher
+	public class ImageProvider extends EventDispatcher
 	{
 		private const PNG: String = "png";
 		private var browseFiles:File;
-		private var spriteSheetFiles:Vector.<File>;
+		private var imageFiles:Vector.<File>;
 		private var loader:Loader;
 
-		public function SpriteSheetProvider()
+		public function ImageProvider()
 		{
 		}
 		
@@ -86,9 +86,9 @@ package spritesheet_pckg
 
 		private function loadFiles(files: Vector.<File>): void {
 			files = filterPngs(files);
-			spriteSheetFiles = files;
-			if (spriteSheetFiles.length > 0) {
-				var nextFile: File = spriteSheetFiles.shift();
+			imageFiles = files;
+			if (imageFiles.length > 0) {
+				var nextFile: File = imageFiles.shift();
 				load(nextFile.url);
 			}
 		}
@@ -109,11 +109,11 @@ package spritesheet_pckg
 			loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadCompleted);
 			loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onLoadFailed);
 			//throw new Error("Loading image failed!");
-			if (spriteSheetFiles.length > 0){
-				var nextFile: File = spriteSheetFiles.shift();
+			if (imageFiles.length > 0){
+				var nextFile: File = imageFiles.shift();
 				load(nextFile.url);
 			} else {
-				dispatchEvent(new SpriteSheetEvent(SpriteSheetEvent.LAST_SPRITE_SHEET_FAILED,null));
+				dispatchEvent(new ImageEvent(ImageEvent.LAST_IMAGE_FAILED,null));
 			}
 		}
 		
@@ -123,19 +123,19 @@ package spritesheet_pckg
 			loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadCompleted);
 			loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onLoadFailed);
 			
-			var spriteSheet:SpriteSheet = new SpriteSheet();
+			var image:Image = new Image();
 			var bmpLocal: Bitmap = Bitmap(loader.content);
-			spriteSheet.bmpData = bmpLocal.bitmapData;
+			image.bmpData = bmpLocal.bitmapData;
 			var pathDecomposed: Array = loader.contentLoaderInfo.url.split("/");
-			spriteSheet.name = pathDecomposed[pathDecomposed.length - 1].split(".")[0];
-			var len: int = spriteSheetFiles.length;
+			image.name = pathDecomposed[pathDecomposed.length - 1].split(".")[0];
+			var len: int = imageFiles.length;
 			if (len == 0) {
-				dispatchEvent(new SpriteSheetEvent(SpriteSheetEvent.LAST_SPRITE_SHEET_LOADED,spriteSheet));
+				dispatchEvent(new ImageEvent(ImageEvent.LAST_IMAGE_LOADED,image));
 			}
-			dispatchEvent(new SpriteSheetEvent(SpriteSheetEvent.SPRITE_SHEET_LOADED,spriteSheet));
+			dispatchEvent(new ImageEvent(ImageEvent.IMAGE_LOADED,image));
 			
 			if (len > 0){
-				var nextFile: File = spriteSheetFiles.shift();
+				var nextFile: File = imageFiles.shift();
 				load(nextFile.url);
 			}
 		}

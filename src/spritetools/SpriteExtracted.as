@@ -1,4 +1,4 @@
-package sprite_pckg
+package spritetools
 {
 	import flash.geom.Rectangle;
 
@@ -7,8 +7,7 @@ package sprite_pckg
 		public var id: int;
 		public var rect: Rectangle;
 		public var pixels: Vector.<Pixel>;
-		public var merged: Boolean;
-		
+
 		public function SpriteExtracted() {
 			id = ID_COUNTER ++;
 			rect = new Rectangle();

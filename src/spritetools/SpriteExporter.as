@@ -1,4 +1,4 @@
-package sprite_pckg
+package spritetools
 {
 	import com.adobe.images.PNGEncoder;
 	
@@ -9,7 +9,7 @@ package sprite_pckg
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.ByteArray;
-	import spritesheet_pckg.SpriteSheet;
+	import images.Image;
 
 	import utils.Logger;
 
@@ -19,14 +19,14 @@ package sprite_pckg
 		{
 		}
 		
-		public function exportSprites(spriteSheet: SpriteSheet): void
+		public function exportSprites(image: Image): void
 		{
 			var params: CLParams = CLParams.getInstance();
-			var exportingSprites: Vector.<SpriteExtracted> = spriteSheet.sprites;
-			var bmpData: BitmapData = spriteSheet.bmpData;
+			var exportingSprites: Vector.<SpriteExtracted> = image.sprites;
+			var bmpData: BitmapData = image.bmpData;
 			var configFile: String = "";
 			var fileName: String;
-			var spriteName: String = spriteSheet.name;
+			var spriteName: String = image.name;
 			var s: String = File.separator;
 			var destinationPath: String = params.getParam(CLParams.DEST_FOLDER);
 			var startSeparator: String = destinationPath.charAt(destinationPath.length - 1) == s ? "" : s;

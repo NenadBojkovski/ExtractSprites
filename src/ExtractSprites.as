@@ -24,32 +24,32 @@ package
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 
-	import sprite_pckg.AnimationCompressor;
-	import sprite_pckg.SpriteExporter;
-	import sprite_pckg.SpriteExtractor;
-	import sprite_pckg.SpriteHighlighter;
+	import spritetools.AnimationDeltaConverter;
+	import spritetools.SpriteExporter;
+	import spritetools.SpriteExtractor;
+	import spritetools.SpriteHighlighter;
 
-	import spritesheet_pckg.SpriteSheet;
+	import images.Image;
 
 	import utils.Logger;
-	import spritesheet_pckg.SpriteSheet;
-	import spritesheet_pckg.SpriteSheetEvent;
-	import spritesheet_pckg.SpriteSheetProvider;
+	import images.Image;
+	import images.ImageEvent;
+	import images.ImageProvider;
 	
 	[SWF(height="1024", width="1024")]
 	public class ExtractSprites extends Sprite
 	{
 		private var bmp: Bitmap;		
 		
-		private var spriteSheetProvider: SpriteSheetProvider;
+		private var spriteSheetProvider: ImageProvider;
 		private var spriteExtractor: SpriteExtractor;
 		private var spriteExporter: SpriteExporter;
 		private var spriteHighlighter: SpriteHighlighter;
-		private var animationCompressor: AnimationCompressor;
+		private var _animationDeltaConverter: AnimationDeltaConverter;
 		private var lastSpriteSheetLoaded: Boolean;
 		private var now: Number;
 		private var numImagesProcessed: int;
-		private var isCompression: Boolean = false;
+		private var isAnimationConversion: Boolean = false;
 		//1. command line;
 		//2. ui
 		//3. folders
@@ -57,16 +57,16 @@ package
 		public function ExtractSprites()
 		{
 
-			spriteSheetProvider = new SpriteSheetProvider();
+			spriteSheetProvider = new ImageProvider();
 			spriteExporter = new SpriteExporter();
 			spriteExtractor = new SpriteExtractor();
 			spriteHighlighter = new SpriteHighlighter();
-			animationCompressor = new AnimationCompressor();
+			_animationDeltaConverter = new AnimationDeltaConverter();
 			Logger.init();
 			
-			spriteSheetProvider.addEventListener(SpriteSheetEvent.SPRITE_SHEET_LOADED, onSpriteSheetLoaded);
-			spriteSheetProvider.addEventListener(SpriteSheetEvent.LAST_SPRITE_SHEET_LOADED, onLastSpriteSheetLoaded);
-			spriteSheetProvider.addEventListener(SpriteSheetEvent.LAST_SPRITE_SHEET_FAILED, onLastSpriteSheetFailed);
+			spriteSheetProvider.addEventListener(ImageEvent.IMAGE_LOADED, onSpriteSheetLoaded);
+			spriteSheetProvider.addEventListener(ImageEvent.LAST_IMAGE_LOADED, onLastSpriteSheetLoaded);
+			spriteSheetProvider.addEventListener(ImageEvent.LAST_IMAGE_FAILED, onLastSpriteSheetFailed);
 			bmp = new Bitmap();
 			bmp.scaleX = bmp.scaleY = 0.5;
 			spriteHighlighter.scaleX = spriteHighlighter.scaleY = bmp.scaleX;
@@ -78,14 +78,14 @@ package
 			NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onAppInvoked);
 		}
 
-		private function onLastSpriteSheetFailed(event: SpriteSheetEvent): void {
+		private function onLastSpriteSheetFailed(event: ImageEvent): void {
 			generateLogs();
 		}
 
-		private function onLastSpriteSheetLoaded(event: SpriteSheetEvent): void {
+		private function onLastSpriteSheetLoaded(event: ImageEvent): void {
 			lastSpriteSheetLoaded = true;
-			if (isCompression) {
-				var compressedSprites: Vector.<SpriteSheet> = animationCompressor.compress();
+			if (isAnimationConversion) {
+				var compressedSprites: Vector.<Image> = _animationDeltaConverter.convert();
 				var len: int = compressedSprites.length;
 				for (var i: int = 0; i < len; ++i) {
 					spriteExporter.exportSprites(compressedSprites[i]);
@@ -94,16 +94,16 @@ package
 			}
 		}
 
-		private function onSpriteSheetLoaded(event:SpriteSheetEvent):void
+		private function onSpriteSheetLoaded(event:ImageEvent):void
 		{
-			if (isCompression) {
-				animationCompressor.addSprite(event.spriteSheet);
+			if (isAnimationConversion) {
+				_animationDeltaConverter.addSprite(event.image);
 			} else {
-				startExtraction(event.spriteSheet);
+				startExtraction(event.image);
 			}
 		}
 		
-		private function startExtraction(spriteSheet: SpriteSheet): void {
+		private function startExtraction(spriteSheet: Image): void {
 			bmp.bitmapData && bmp.bitmapData.dispose();
 			bmp.bitmapData = spriteSheet.bmpData;			
 			spriteExtractor.extractSprites(spriteSheet);
@@ -161,8 +161,8 @@ package
 				spriteSheetProvider.loadFile();
 			} else if (!params.clMode) {
 				now = getTimer();
-				spriteSheetProvider.loadFolder();
-				//spriteSheetProvider.loadFile();
+				//spriteSheetProvider.loadFolder();
+				spriteSheetProvider.loadFile();
 				//spriteSheetProvider.loadMultiple();
 			}
 		}		

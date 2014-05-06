@@ -1,11 +1,11 @@
-package sprite_pckg
+package spritetools
 {
 	import flash.display.BitmapData;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	
-	import spritesheet_pckg.SpriteSheet;
+	import images.Image;
 	
 	import utils.Logger;
 
@@ -15,7 +15,7 @@ package sprite_pckg
 		{
 		}
 		
-		public function extractSprites(spriteSheet: SpriteSheet, mergeOverlappingSprites: Boolean = true, hSpacing: int = 0, vSpacing: int = 0 ): Vector.<SpriteExtracted>
+		public function extractSprites(spriteSheet: Image, mergeOverlappingSprites: Boolean = true, hSpacing: int = 0, vSpacing: int = 0 ): Vector.<SpriteExtracted>
 		{
 			var now: Number = getTimer();
 			var bmpData: BitmapData = spriteSheet.bmpData;
@@ -121,14 +121,12 @@ package sprite_pckg
 					while (merged){
 						merged = false;
 						for each(spriteJ in spriteDict){
-							//	spriteJ = mergingSprites[j];
 							spriteJid = spriteJ.id;
 							if (spriteIid != spriteJid && spriteI.rect.intersects(spriteJ.rect)) {
 								delete spriteDict[spriteJid];	
 								spriteI.merge(spriteJ,false);
 								merged = true;
 								break;
-								//spriteDict[spriteJ.id] = spriteJ;
 							}
 							
 						} 
@@ -145,8 +143,8 @@ package sprite_pckg
 									var val1: int = (sprite1.rect.y - 1) * ssWidth + sprite1.rect.x;
 									var val2: int = (sprite2.rect.y - 1) * ssWidth + sprite2.rect.x;
 									return val1 < val2 ? -1 : 1;
-								})
-			Logger.log("Num of sprites "+ finalSprites.length)
+								});
+			Logger.log("Num of sprites "+ finalSprites.length);
 			spriteSheet.sprites = finalSprites;
 			return finalSprites;		
 		}
