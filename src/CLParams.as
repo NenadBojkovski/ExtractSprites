@@ -8,12 +8,12 @@ package
 	public class CLParams
 	{
 		
-		public static const FILE: String = "file";
-		public static const FOLDER: String = "folder";
+		public static const SRC_FILE: String = "srcFile";
+		public static const SRC_FOLDER: String = "srcFolder";
 		public static const DEST_FOLDER: String = "destFolder";
 		public static const CONFIG_FILE_FORMAT: String = "configFileFormat";
 
-		private var availableArguments: Array = [FILE, DEST_FOLDER, CONFIG_FILE_FORMAT, FOLDER];
+		private var availableArguments: Array = [SRC_FILE, DEST_FOLDER, CONFIG_FILE_FORMAT, SRC_FOLDER];
 		private var params: Dictionary = new Dictionary();
 		//if the commandline params are provided.
 		private var _clMode: Boolean = false;
@@ -65,7 +65,7 @@ package
 				}
 
 			}
-			if (_clMode && !params[FOLDER] && !params[FILE]) {
+			if (_clMode && !params[SRC_FOLDER] && !params[SRC_FILE]) {
 				errorText = "There is no file or folder chosen!";
 				Logger.error(errorText);
 				throw  new Error(errorText);
