@@ -15,6 +15,9 @@ package spritetools {
 		}
 
 		public function convert(): Vector.<Image> {
+			spritesToConvert.sort(function (image1: Image, image2: Image): int {
+				return image1.name < image2.name ? -1 : 1;
+			});
 			var compressedSprites: Vector.<Image> = new Vector.<Image>();
 			var len: int = spritesToConvert.length;
 			var sprite: Image;
