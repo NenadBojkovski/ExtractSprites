@@ -11,9 +11,10 @@ package
 		public static const SRC_FILE: String = "srcFile";
 		public static const SRC_FOLDER: String = "srcFolder";
 		public static const DEST_FOLDER: String = "destFolder";
+		public static const DECOMPOSE: String = "decompose";  //"t" - true, "f" - false
 		public static const CONFIG_FILE_FORMAT: String = "configFileFormat";
 
-		private var availableArguments: Array = [SRC_FILE, DEST_FOLDER, CONFIG_FILE_FORMAT, SRC_FOLDER];
+		private var availableArguments: Array = [SRC_FILE, DEST_FOLDER, CONFIG_FILE_FORMAT, SRC_FOLDER, DECOMPOSE];
 		private var params: Dictionary = new Dictionary();
 		//if the commandline params are provided.
 		private var _clMode: Boolean = false;
@@ -28,6 +29,7 @@ package
 			}
 			params[DEST_FOLDER] = File.documentsDirectory.nativePath + File.separator + "sprites";
 			params[CONFIG_FILE_FORMAT] = "txt";
+			params[DECOMPOSE] = "t";
 		}
 
 		public static function getInstance(): CLParams {

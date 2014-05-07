@@ -15,7 +15,7 @@ package spritetools
 		{
 		}
 		
-		public function extractSprites(spriteSheet: Image, mergeOverlappingSprites: Boolean = true, hSpacing: int = 0, vSpacing: int = 0 ): Vector.<SpriteExtracted>
+		public function extractSprites(spriteSheet: Image, decompose: String = "t", mergeOverlappingSprites: Boolean = true, hSpacing: int = 0, vSpacing: int = 0 ): Vector.<SpriteExtracted>
 		{
 			var now: Number = getTimer();
 			var bmpData: BitmapData = spriteSheet.bmpData;
@@ -108,12 +108,22 @@ package spritetools
 			}
 			
 			Logger.log("Image analysing time: " + (getTimer() - now) + " ms.");
-			if (mergeOverlappingSprites){
-				now = getTimer();
-				var spriteI: SpriteExtracted;
-				var spriteIid: int;
-				var spriteJ: SpriteExtracted;
-				var spriteJid: int;
+			now = getTimer();
+
+			var spriteI: SpriteExtracted;
+			var spriteIid: int;
+			var spriteJ: SpriteExtracted;
+			var spriteJid: int;
+			if(decompose == "f") {
+				for each(spriteJ in spriteDict){
+					if(!spriteI) {
+						spriteI = spriteJ;
+					} else {
+						delete spriteDict[spriteJ.id];
+						spriteI.merge(spriteJ, false);
+					}
+				}
+			} else if (mergeOverlappingSprites){
 				var merged: Boolean;
 				for each(spriteI in spriteDict){
 					spriteIid = spriteI.id;

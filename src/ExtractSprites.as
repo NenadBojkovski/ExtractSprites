@@ -103,14 +103,14 @@ package
 			}
 		}
 		
-		private function startExtraction(spriteSheet: Image): void {
+		private function startExtraction(image: Image): void {
 			bmp.bitmapData && bmp.bitmapData.dispose();
-			bmp.bitmapData = spriteSheet.bmpData;			
-			spriteExtractor.extractSprites(spriteSheet);
+			bmp.bitmapData = image.bmpData;
+			spriteExtractor.extractSprites(image, CLParams.getInstance().getParam(CLParams.DECOMPOSE));
 			//if (!CLParams.getInstance().clMode) {
-				spriteHighlighter.highlightSprites(spriteSheet.sprites);
+				spriteHighlighter.highlightSprites(image.sprites);
 			//}
-			spriteExporter.exportSprites(spriteSheet);
+			spriteExporter.exportSprites(image);
 			numImagesProcessed ++;
 			if (lastSpriteSheetLoaded) {
 				shutDownGracefully();
@@ -161,8 +161,8 @@ package
 				spriteSheetProvider.loadFile();
 			} else if (!params.clMode) {
 				now = getTimer();
-				spriteSheetProvider.loadFolder();
-				//spriteSheetProvider.loadFile();
+				//spriteSheetProvider.loadFolder();
+				spriteSheetProvider.loadFile();
 				//spriteSheetProvider.loadMultiple();
 			}
 		}		

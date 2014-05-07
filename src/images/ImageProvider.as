@@ -85,7 +85,7 @@ package images
 		}
 
 		private function loadFiles(files: Vector.<File>): void {
-			files = filterPngs(files);
+			//files = filterPngs(files);
 			imageFiles = files;
 			if (imageFiles.length > 0) {
 				var nextFile: File = imageFiles.shift();
