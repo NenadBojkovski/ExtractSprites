@@ -43,7 +43,7 @@
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
   <buildTargets>
     <buildTarget buildTargetName="default">
-      <airSettings airCertificatePath="E:/Development/ExtractSprites/bin-release/certificate.p12" airTimestamp="false" anePathSet="true" version="1">
+      <airSettings airCertificatePath="E:/Development/ExtractSprites/bin-release/certf.p12" airTimestamp="true" anePathSet="true" version="1">
         <airExcludes/>
         <anePaths/>
       </airSettings>
